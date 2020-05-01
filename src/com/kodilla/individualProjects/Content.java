@@ -53,7 +53,7 @@ public class Content {
             if (playerBoard.placeShip(new Ship(Ship.getShipsSizesForRussianGame().get(playerShipsToPlace-1),
                                        event.getButton() == MouseButton.PRIMARY),
                                       cellClickedOnPlayerBoard.x, cellClickedOnPlayerBoard.y)) {
-                if (--playerShipsToPlace == 0) {
+                if (--playerShipsToPlace == 0) { //zdekrementować
                     gamePrepared = enemy.prepareShips(enemyBoard, enemyShipsToPlace);
                 }
             }

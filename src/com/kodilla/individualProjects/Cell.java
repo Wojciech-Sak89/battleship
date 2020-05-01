@@ -55,7 +55,7 @@ public class Cell extends Rectangle {
         return false;
     }
 
-    // change to stream with flatmap()? make more methods, refactor - simplify using list ship.coordinates
+    // change to stream with flatmap()? make more methods, refactor - simplify using list ship.coordinates, koniecznie stream!!!
     public void shootSurroundingsOfSunkenShips() {
         ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = board.wholeShipsCoordinates;
 
@@ -72,7 +72,7 @@ public class Cell extends Rectangle {
 
             if (shotShipFragmentsNum == shipCoordinates.size()) {
 
-                if (shotShipFragmentsNum == 1) {
+                if (shotShipFragmentsNum == 1) { // osobna metoda markifOne()
                     for (Cell cell : board.getAllNeighboringCells(shipCoordinates.get(0).getX(),
                                                                   shipCoordinates.get(0).getY())) {
                         cell.markDefaultMissed();
