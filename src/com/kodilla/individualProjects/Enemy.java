@@ -11,7 +11,7 @@ public class Enemy {
             int x = random.nextInt(10);
             int y = random.nextInt(10);
 
-            if (enemyBoard.placeShip(new Ship(Ship.getShipsSizesForRussianGame().get(enemyShipsToPlace-1), Math.random() < 0.5), x, y)) {
+            if (enemyBoard.placeShip(new Ship(Ship.getRussianShips().get(enemyShipsToPlace-1), Math.random() < 0.5), x, y)) {
                 enemyShipsToPlace--;
             }
         }

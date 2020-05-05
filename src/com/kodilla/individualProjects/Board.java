@@ -13,25 +13,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 
 public class Board extends Parent {
+    Images img = new Images();
 
     private final VBox rows = new VBox();
-    public boolean isEnemyBoard;
 
+    public boolean isEnemyBoard;
     public int ships = 10;
     public ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = new ArrayList<>();
-
-    // to new class with images
-    Image shipSizeOneVertical = new Image("file:resources/Battleships-by-size/1/ShipPatrolHull_OnBackground_Vertical.png");
-    Image shipSizeOneHorizontal = new Image("file:resources/Battleships-by-size/1/ShipPatrolHull_OnBackground_Horizontal.png");
-
-    Image shipDefaultVerticalBow = new Image("file:resources/Battleships-by-size/Alive/Vertical/Ship_Alive_Bow_Vertical.png");
-    Image shipDefaultVerticalCenter = new Image("file:resources/Battleships-by-size/Alive/Vertical/Ship_Alive_Center_Vertical.png");
-    Image shipDefaultVerticalStern = new Image("file:resources/Battleships-by-size/Alive/Vertical/Ship_Alive_Stern_Vertical.png");
-
-    Image shipDefaultHorizontalBow = new Image("file:resources/Battleships-by-size/Alive/Horizontal/Ship_Alive_Bow_Horizontal.png");
-    Image shipDefaultHorizontalCenter = new Image("file:resources/Battleships-by-size/Alive/Horizontal/Ship_Alive_Center_Horizontal.png");
-    Image shipDefaultHorizontalStern = new Image("file:resources/Battleships-by-size/Alive/Horizontal/Ship_Alive_Stern_Horizontal.png");
-
 
     public Board(boolean isEnemyBoard, EventHandler<? super MouseEvent> handler) {
         this.isEnemyBoard = isEnemyBoard;
@@ -52,8 +40,10 @@ public class Board extends Parent {
 
     // refactor
     public boolean placeShip(Ship ship, int x, int y) {
+        ArrayList<Coordinates> partsOfTheShipCoordinates = new ArrayList<>();
+
         if (canPlaceShip(ship, x, y)) {
-            int shipLength = ship.type;
+            int shipSize = ship.size;
             int tempX = x, tempY = y;
 
             if (!ship.isVertical) {
@@ -61,43 +51,18 @@ public class Board extends Parent {
                 y = tempX;
             }
 
-            ArrayList<Coordinates> partsOfTheShipCoordinates = new ArrayList<>();
-            for (int i = y; i < y + shipLength; i++) {
+            for (int i = y; i < y + shipSize; i++) {
                 Cell cell = ship.isVertical ? getCellOnBoard(x, i) : getCellOnBoard(i, x);
                 cell.ship = ship;
 
                 int currX = ship.isVertical ? x : i;
                 int currY = ship.isVertical ? i : x;
+
                 partsOfTheShipCoordinates.add(new Coordinates(currX, currY, ship.isVertical));
                 ship.getCoordinates().add(new Coordinates(currX, currY, ship.isVertical));
 
                 if (!isEnemyBoard) {
-                    //vertical size 1
-                    if (ship.isVertical && shipLength == 1) {
-                        cell.setFill(new ImagePattern(shipSizeOneVertical));
-
-                    } else if (!ship.isVertical && shipLength == 1) {
-                        cell.setFill(new ImagePattern(shipSizeOneHorizontal));
-
-                        // vertical, different sizes
-                    } else if (ship.isVertical && shipLength > 1) {
-                        if (i-y == 0)
-                        cell.setFill(new ImagePattern(shipDefaultVerticalBow));
-                        if (i-y > 0 && i < y + shipLength -1)
-                            cell.setFill(new ImagePattern(shipDefaultVerticalCenter));
-                        if (i == y + shipLength -1)
-                            cell.setFill(new ImagePattern(shipDefaultVerticalStern));
-
-                        // horizontal, different sizes
-                    } else if (!ship.isVertical && shipLength > 1) {
-                        if (i-y == 0)
-                            cell.setFill(new ImagePattern(shipDefaultHorizontalStern));
-                        if (i-y > 0 && i < y + shipLength -1)
-                            cell.setFill(new ImagePattern(shipDefaultHorizontalCenter));
-                        if (i == y + shipLength -1)
-                            cell.setFill(new ImagePattern(shipDefaultHorizontalBow));
-                    }
-
+                    setShipImages(ship, y, shipSize, i, cell);
                 }
             }
 
@@ -110,7 +75,7 @@ public class Board extends Parent {
     }
 
     private boolean canPlaceShip(Ship ship, int x, int y) {
-        int length = ship.type;
+        int length = ship.size;
 
         if (ship.isVertical) {
             for (int i = y; i < y + length; i++) {
@@ -186,19 +151,46 @@ public class Board extends Parent {
         return neighbors.toArray(new Cell[0]);
     }
 
-    // checked
     public Cell getCellOnBoard(int x, int y) {
         return (Cell) ((HBox) rows.getChildren().get(y)).getChildren().get(x);
     }
 
-    // checked, refactored
     public boolean pointIsInGridRange(Point2D point) {
         return pointIsInGridRange(point.getX(), point.getY());
     }
 
-    // checked, refactored
     private boolean pointIsInGridRange(double x, double y) {
         return x >= 0 && x < 10 && y >= 0 && y < 10;
+    }
+
+    private void setShipImages(Ship ship, int y, int shipSize, int i, Cell cell) {
+        if (ship.isVertical && shipSize == ShipType.PATROL.size) {
+            cell.setFill(new ImagePattern(img.patrolShipVertical));
+
+        } else if (!ship.isVertical && shipSize == ShipType.PATROL.size) {
+            cell.setFill(new ImagePattern(img.patrolShipHorizontal));
+
+        } else if (ship.isVertical && shipSize > ShipType.PATROL.size) {
+            setImageOfShipFragment(y, shipSize, i, cell, img.shipDefaultVerticalBow,
+                                                         img.shipDefaultVerticalCenter,
+                                                         img.shipDefaultVerticalStern);
+
+        } else if (!ship.isVertical && shipSize > ShipType.PATROL.size) {
+            setImageOfShipFragment(y, shipSize, i, cell, img.shipDefaultHorizontalStern,
+                                                         img.shipDefaultHorizontalCenter,
+                                                         img.shipDefaultHorizontalBow);
+        }
+    }
+
+    private void setImageOfShipFragment(int y, int shipSize, int i, Cell cell, Image shipDefaultBow,
+                                                                               Image shipDefaultCenter,
+                                                                               Image shipDefaultStern) {
+        if (i - y == 0)
+            cell.setFill(new ImagePattern(shipDefaultBow));
+        if (i - y > 0 && i < y + shipSize - 1)
+            cell.setFill(new ImagePattern(shipDefaultCenter));
+        if (i == y + shipSize - 1)
+            cell.setFill(new ImagePattern(shipDefaultStern));
     }
 
 

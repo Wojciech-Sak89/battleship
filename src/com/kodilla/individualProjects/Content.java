@@ -50,10 +50,16 @@ public class Content {
                 return;
 
             Cell cellClickedOnPlayerBoard = (Cell) event.getSource();
-            if (playerBoard.placeShip(new Ship(Ship.getShipsSizesForRussianGame().get(playerShipsToPlace-1),
-                                       event.getButton() == MouseButton.PRIMARY),
-                                      cellClickedOnPlayerBoard.x, cellClickedOnPlayerBoard.y)) {
-                if (--playerShipsToPlace == 0) { //zdekrementować
+            if (playerBoard.placeShip(
+                    new Ship(Ship.getRussianShips()
+                            .get(playerShipsToPlace - 1),
+                            event.getButton() == MouseButton.PRIMARY),
+                    cellClickedOnPlayerBoard.x,
+                    cellClickedOnPlayerBoard.y)) {
+
+                playerShipsToPlace--;
+
+                if (playerShipsToPlace == 0) {
                     gamePrepared = enemy.prepareShips(enemyBoard, enemyShipsToPlace);
                 }
             }
