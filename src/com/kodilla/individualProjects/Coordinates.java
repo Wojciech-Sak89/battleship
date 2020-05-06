@@ -18,4 +18,5 @@ public class Coordinates {
     public int getY() {
         return y;
     }
+
 }

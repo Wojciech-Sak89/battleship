@@ -1,5 +1,7 @@
 package com.kodilla.individualProjects;
 
+import com.kodilla.individualProjects.enums.ShipSituation;
+import com.kodilla.individualProjects.enums.ShipType;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
@@ -57,7 +59,7 @@ public class Ship extends Parent {
         if (isVertical && size == ShipType.PATROL.size) {
             destroyPatrol(board, img.patrolShipDestroyedVertical);
 
-        } else if (!isVertical && size == ShipType.PATROL.size) {
+        } else if (isVertical == ShipSituation.HORIZONTAL.orientation && size == ShipType.PATROL.size) {
             destroyPatrol(board, img.patrolShipDestroyedHorizontal);
 
         } else if (isVertical && size > ShipType.PATROL.size) {
@@ -65,7 +67,7 @@ public class Ship extends Parent {
                                                     img.shipDestroyedVerticalCenter,
                                                     img.shipDestroyedVerticalStern);
 
-        } else if (!isVertical && size > ShipType.PATROL.size) {
+        } else if (isVertical == ShipSituation.HORIZONTAL.orientation && size > ShipType.PATROL.size) {
             destroyShipGreaterThanPatrol(board, img.shipDestroyedHorizontalStern,
                                                     img.shipDestroyedHorizontalCenter,
                                                     img.shipDestroyedHorizontalBow);
@@ -78,8 +80,8 @@ public class Ship extends Parent {
     }
 
     private void destroyShipGreaterThanPatrol(Board board, Image shipDestroyedBow,
-                                              Image shipDestroyedCenter,
-                                              Image shipDestroyedStern) {
+                                                           Image shipDestroyedCenter,
+                                                           Image shipDestroyedStern) {
         for (int i = 0; i < size; i++) {
             Cell cell = board.getCellOnBoard(coordinates.get(i).getX(), coordinates.get(i).getY());
             if (i == 0)
@@ -90,6 +92,5 @@ public class Ship extends Parent {
                 cell.setFill(new ImagePattern(shipDestroyedStern));
         }
     }
-
 
 }

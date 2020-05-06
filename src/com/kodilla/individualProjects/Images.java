@@ -4,7 +4,7 @@ import javafx.scene.image.Image;
 
 public class Images {
 
-    // Patrol ships, default or destroyed
+    // Patrol ships, alive or destroyed
     Image patrolShipVertical = new Image("file:resources/Battleships-by-size/1/ShipPatrolHull_OnBackground_Vertical.png");
     Image patrolShipHorizontal = new Image("file:resources/Battleships-by-size/1/ShipPatrolHull_OnBackground_Horizontal.png");
 

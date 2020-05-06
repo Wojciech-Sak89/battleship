@@ -1,10 +1,13 @@
 package com.kodilla.individualProjects;
 
+import javafx.scene.paint.Color;
+
 import java.util.Random;
 
 public class Enemy {
 
     private final Random random = new Random();
+    Color textResultLoseColor = Color.rgb(144, 6, 37);
 
     public boolean prepareShips(Board enemyBoard, int enemyShipsToPlace) {
         while (enemyShipsToPlace > 0) {
@@ -28,12 +31,16 @@ public class Enemy {
             if (cell.wasAlreadyShot)
                 continue;
 
-            enemyTurn = cell.hittingOpponentsCell();
+            enemyTurn = cell.wasThereAShip();
 
             if (playerBoard.ships == 0) {
-                System.out.println("YOU LOSE");
-                System.exit(0);
+                Content.setResultText("You have lost...");
+                Content.setTextResultColor(textResultLoseColor);
+
+                Content.setGameFinished(true);
+                break;
             }
         }
     }
+
 }

@@ -3,6 +3,9 @@ package com.kodilla.individualProjects;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kodilla.individualProjects.enums.BoardOwner;
+import com.kodilla.individualProjects.enums.ShipSituation;
+import com.kodilla.individualProjects.enums.ShipType;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
@@ -17,12 +20,12 @@ public class Board extends Parent {
 
     private final VBox rows = new VBox();
 
-    public boolean isEnemyBoard;
+    public boolean boardOwner;
     public int ships = 10;
     public ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = new ArrayList<>();
 
     public Board(boolean isEnemyBoard, EventHandler<? super MouseEvent> handler) {
-        this.isEnemyBoard = isEnemyBoard;
+        this.boardOwner = isEnemyBoard;
         for (int y = 0; y < 10; y++) {
             HBox row = new HBox();
             for (int x = 0; x < 10; x++) {
@@ -38,7 +41,6 @@ public class Board extends Parent {
         getChildren().add(rows);
     }
 
-    // refactor
     public boolean placeShip(Ship ship, int x, int y) {
         ArrayList<Coordinates> partsOfTheShipCoordinates = new ArrayList<>();
 
@@ -46,7 +48,7 @@ public class Board extends Parent {
             int shipSize = ship.size;
             int tempX = x, tempY = y;
 
-            if (!ship.isVertical) {
+            if (ship.isVertical == ShipSituation.HORIZONTAL.orientation) {
                 x = tempY;
                 y = tempX;
             }
@@ -61,7 +63,7 @@ public class Board extends Parent {
                 partsOfTheShipCoordinates.add(new Coordinates(currX, currY, ship.isVertical));
                 ship.getCoordinates().add(new Coordinates(currX, currY, ship.isVertical));
 
-                if (!isEnemyBoard) {
+                if (boardOwner == BoardOwner.PLAYER.isOwner) {
                     setShipImages(ship, y, shipSize, i, cell);
                 }
             }
@@ -167,7 +169,7 @@ public class Board extends Parent {
         if (ship.isVertical && shipSize == ShipType.PATROL.size) {
             cell.setFill(new ImagePattern(img.patrolShipVertical));
 
-        } else if (!ship.isVertical && shipSize == ShipType.PATROL.size) {
+        } else if (ship.isVertical == ShipSituation.HORIZONTAL.orientation && shipSize == ShipType.PATROL.size) {
             cell.setFill(new ImagePattern(img.patrolShipHorizontal));
 
         } else if (ship.isVertical && shipSize > ShipType.PATROL.size) {
@@ -175,7 +177,7 @@ public class Board extends Parent {
                                                          img.shipDefaultVerticalCenter,
                                                          img.shipDefaultVerticalStern);
 
-        } else if (!ship.isVertical && shipSize > ShipType.PATROL.size) {
+        } else if (ship.isVertical == ShipSituation.HORIZONTAL.orientation && shipSize > ShipType.PATROL.size) {
             setImageOfShipFragment(y, shipSize, i, cell, img.shipDefaultHorizontalStern,
                                                          img.shipDefaultHorizontalCenter,
                                                          img.shipDefaultHorizontalBow);
@@ -192,6 +194,5 @@ public class Board extends Parent {
         if (i == y + shipSize - 1)
             cell.setFill(new ImagePattern(shipDefaultStern));
     }
-
 
 }

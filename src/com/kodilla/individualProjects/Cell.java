@@ -26,23 +26,24 @@ class Cell extends Rectangle {
         setStrokeWidth(1);
     }
 
-    public boolean hittingOpponentsCell() {
+    public boolean wasThereAShip() {
         wasAlreadyShot = true;
         setFill(new ImagePattern(img.shotCellWithNoShip));
 
         if (ship != null) {
             ship.hit();
             setFill(new ImagePattern(img.shipOnFire));
+
             if (!ship.isAlive()) {
                 board.ships--;
                 ship.markDestroyed(board);
             }
 
             for (Cell cell : board.getDiagonalNeighboringCells(x, y)) {
-                cell.markDefaultMissed();
+                cell.markMissed();
             }
 
-            marker.shootSurroundingsOfSunkenShips();
+            marker.markSurroundingsOfSunkenShips();
 
             return true;
         }
@@ -50,12 +51,9 @@ class Cell extends Rectangle {
         return false;
     }
 
-    public void markDefaultMissed() {
+    public void markMissed() {
         wasAlreadyShot = true;
         setFill(new ImagePattern(img.shotCellWithNoShip));
     }
-
-
-
 
 }

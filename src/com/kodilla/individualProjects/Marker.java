@@ -1,5 +1,6 @@
 package com.kodilla.individualProjects;
 
+import com.kodilla.individualProjects.enums.ShipType;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class Marker {
         this.board = board;
     }
 
-    public void shootSurroundingsOfSunkenShips() {
+    public void markSurroundingsOfSunkenShips() {
         ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = board.wholeShipsCoordinates;
 
         for (ArrayList<Coordinates> shipCoordinates : wholeShipsCoordinates) {
@@ -19,7 +20,7 @@ public class Marker {
 
             shotShipFragmentsNum = getShotShipFragmentsNum(shipCoordinates, shotShipFragmentsNum);
 
-            markSurroundingsIfWholeShipWasDestroyed(shipCoordinates, shotShipFragmentsNum);
+            markSurroundingsOfOneSunkenShip(shipCoordinates, shotShipFragmentsNum);
         }
     }
 
@@ -34,14 +35,14 @@ public class Marker {
         return shotShipFragmentsNum;
     }
 
-    private void markSurroundingsIfWholeShipWasDestroyed(ArrayList<Coordinates> shipCoordinates, int shotShipFragmentsNum) {
+    private void markSurroundingsOfOneSunkenShip(ArrayList<Coordinates> shipCoordinates, int shotShipFragmentsNum) {
         if (shotShipFragmentsNum == shipCoordinates.size()) {
 
             if (shotShipFragmentsNum == ShipType.PATROL.size) {
                 markSurroundingsOfPatrolShip(shipCoordinates);
 
             } else {
-                markSurroundingsOfShipGreaterThanPatrolUnit(shipCoordinates);
+                markSurroundingsOfShipGreaterThanPatrol(shipCoordinates);
 
             }
         }
@@ -50,11 +51,11 @@ public class Marker {
     private void markSurroundingsOfPatrolShip(ArrayList<Coordinates> shipCoordinates) {
         for (Cell cell : board.getAllNeighboringCells(shipCoordinates.get(0).getX(),
                 shipCoordinates.get(0).getY())) {
-            cell.markDefaultMissed();
+            cell.markMissed();
         }
     }
 
-    private void markSurroundingsOfShipGreaterThanPatrolUnit(ArrayList<Coordinates> shipCoordinates) {
+    private void markSurroundingsOfShipGreaterThanPatrol(ArrayList<Coordinates> shipCoordinates) {
         Coordinates bow = shipCoordinates.get(0);
         Coordinates stern = shipCoordinates.get(shipCoordinates.size() - 1);
 
@@ -78,6 +79,7 @@ public class Marker {
     private void markPointAfterShipsVerge(Point2D pointAfterVerge) {
         Cell afterShipVerge = board.getCellOnBoard((int) pointAfterVerge.getX(),
                 (int) pointAfterVerge.getY());
-        afterShipVerge.markDefaultMissed();
+        afterShipVerge.markMissed();
     }
+
 }
