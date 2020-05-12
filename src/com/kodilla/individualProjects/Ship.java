@@ -37,22 +37,43 @@ public class Ship extends Parent {
         return coordinates;
     }
 
-    public static List<Integer> getRussianShips() {
+    public static List<Integer> getShips(boolean classic) {
+       if (classic) {
+           return getClassicShips();
+       } else {
+           return getRussianShips();
+       }
+    }
+
+    private static List<Integer> getRussianShips() {
         ArrayList<Integer> russianShips = new ArrayList<>(10);
-        russianShips.add(4);
-        russianShips.add(3);
-        russianShips.add(3);
-        russianShips.add(2);
-        russianShips.add(2);
-        russianShips.add(2);
-        russianShips.add(1);
-        russianShips.add(1);
-        russianShips.add(1);
-        russianShips.add(1);
+        russianShips.add(ShipType.BATTLESHIP.size);
+        russianShips.add(ShipType.CRUISER.size);
+        russianShips.add(ShipType.CRUISER.size);
+        russianShips.add(ShipType.DESTROYER.size);
+        russianShips.add(ShipType.DESTROYER.size);
+        russianShips.add(ShipType.DESTROYER.size);
+        russianShips.add(ShipType.PATROL.size);
+        russianShips.add(ShipType.PATROL.size);
+        russianShips.add(ShipType.PATROL.size);
+        russianShips.add(ShipType.PATROL.size);
 
         Collections.reverse(russianShips);
 
         return russianShips;
+    }
+
+    private static List<Integer> getClassicShips() {
+        ArrayList<Integer> classicShips = new ArrayList<>(5);
+        classicShips.add(ShipType.AIRCRAFT_CARRIER.size);
+        classicShips.add(ShipType.BATTLESHIP.size);
+        classicShips.add(ShipType.CRUISER.size);
+        classicShips.add(ShipType.DESTROYER.size);;
+        classicShips.add(ShipType.PATROL.size);
+
+        Collections.reverse(classicShips);
+
+        return classicShips;
     }
 
     public void markDestroyed(Board board) {
@@ -75,21 +96,21 @@ public class Ship extends Parent {
     }
 
     private void destroyPatrol(Board board, Image destroyedPatrolShip) {
-        Cell cell = board.getCellOnBoard(coordinates.get(0).getX(), coordinates.get(0).getY());
-        cell.setFill(new ImagePattern(destroyedPatrolShip));
+        CellOnBoard cellOnBoard = board.getCellOnBoard(coordinates.get(0).getX(), coordinates.get(0).getY());
+        cellOnBoard.setFill(new ImagePattern(destroyedPatrolShip));
     }
 
     private void destroyShipGreaterThanPatrol(Board board, Image shipDestroyedBow,
                                                            Image shipDestroyedCenter,
                                                            Image shipDestroyedStern) {
         for (int i = 0; i < size; i++) {
-            Cell cell = board.getCellOnBoard(coordinates.get(i).getX(), coordinates.get(i).getY());
+            CellOnBoard cellOnBoard = board.getCellOnBoard(coordinates.get(i).getX(), coordinates.get(i).getY());
             if (i == 0)
-                cell.setFill(new ImagePattern(shipDestroyedBow));
+                cellOnBoard.setFill(new ImagePattern(shipDestroyedBow));
             if (i > 0 && i < size - 1)
-                cell.setFill(new ImagePattern(shipDestroyedCenter));
+                cellOnBoard.setFill(new ImagePattern(shipDestroyedCenter));
             if (i == size - 1)
-                cell.setFill(new ImagePattern(shipDestroyedStern));
+                cellOnBoard.setFill(new ImagePattern(shipDestroyedStern));
         }
     }
 

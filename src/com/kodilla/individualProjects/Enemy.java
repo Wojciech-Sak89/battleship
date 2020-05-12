@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import java.util.Random;
 
 public class Enemy {
-
+    private boolean hardMode;
     private final Random random = new Random();
     Color textResultLoseColor = Color.rgb(144, 6, 37);
 
@@ -14,7 +14,10 @@ public class Enemy {
             int x = random.nextInt(10);
             int y = random.nextInt(10);
 
-            if (enemyBoard.placeShip(new Ship(Ship.getRussianShips().get(enemyShipsToPlace-1), Math.random() < 0.5), x, y)) {
+            if (enemyBoard.placeShip(new Ship(
+                    Ship.getShips(Content.classicMode).get(enemyShipsToPlace-1),
+                    (Math.random() < 0.5)),
+                    x, y)) {
                 enemyShipsToPlace--;
             }
         }
@@ -26,12 +29,19 @@ public class Enemy {
         while (enemyTurn) {
             int x = random.nextInt(10);
             int y = random.nextInt(10);
+            int shootWithAdvantage = random.nextInt(10 + 1);
 
-            Cell cell = playerBoard.getCellOnBoard(x, y);
-            if (cell.wasAlreadyShot)
+            CellOnBoard cellOnBoard = playerBoard.getCellOnBoard(x, y);
+            if (cellOnBoard.wasAlreadyShot)
                 continue;
 
-            enemyTurn = cell.wasThereAShip();
+            if (hardMode) {
+                if (cellOnBoard.ship == null && shootWithAdvantage > 5) {
+                    continue;
+                }
+            }
+
+            enemyTurn = cellOnBoard.shootCell().shootShip();
 
             if (playerBoard.ships == 0) {
                 Content.setResultText("You have lost...");
@@ -43,4 +53,7 @@ public class Enemy {
         }
     }
 
+    public void setHardMode(boolean hardMode) {
+        this.hardMode = hardMode;
+    }
 }

@@ -2,11 +2,13 @@ package com.kodilla.individualProjects;
 
 import com.kodilla.individualProjects.enums.ShipType;
 import javafx.geometry.Point2D;
+import javafx.scene.paint.ImagePattern;
 
 import java.util.ArrayList;
 
 public class Marker {
-    Board board;
+    Board board; // zmienić na private!!!
+    Images img = new Images();
 
     public Marker(Board board) {
         this.board = board;
@@ -26,9 +28,9 @@ public class Marker {
 
     private int getShotShipFragmentsNum(ArrayList<Coordinates> shipCoordinates, int shotShipFragmentsNum) {
         for (Coordinates shipFragmentCoordinates : shipCoordinates) {
-            Cell cell = board.getCellOnBoard(shipFragmentCoordinates.getX(), shipFragmentCoordinates.getY());
+            CellOnBoard cellOnBoard = board.getCellOnBoard(shipFragmentCoordinates.getX(), shipFragmentCoordinates.getY());
 
-            if (cell.wasAlreadyShot && cell.ship != null) {
+            if (cellOnBoard.wasAlreadyShot && cellOnBoard.ship != null) {
                 shotShipFragmentsNum++;
             }
         }
@@ -49,9 +51,9 @@ public class Marker {
     }
 
     private void markSurroundingsOfPatrolShip(ArrayList<Coordinates> shipCoordinates) {
-        for (Cell cell : board.getAllNeighboringCells(shipCoordinates.get(0).getX(),
+        for (CellOnBoard cellOnBoard : board.getAllNeighboringCells(shipCoordinates.get(0).getX(),
                 shipCoordinates.get(0).getY())) {
-            cell.markMissed();
+            cellOnBoard.markMissed();
         }
     }
 
@@ -77,9 +79,35 @@ public class Marker {
     }
 
     private void markPointAfterShipsVerge(Point2D pointAfterVerge) {
-        Cell afterShipVerge = board.getCellOnBoard((int) pointAfterVerge.getX(),
+        CellOnBoard afterShipVerge = board.getCellOnBoard((int) pointAfterVerge.getX(),
                 (int) pointAfterVerge.getY());
         afterShipVerge.markMissed();
+    }
+
+
+    public void makeNewBoard() {
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                board.getCellOnBoard(x, y).ship = null;
+                board.getCellOnBoard(x, y).wasAlreadyShot = false;
+                board.getCellOnBoard(x, y).setFill(new ImagePattern(img.defaultWater));
+            }
+        }
+
+        board.wholeShipsCoordinates.clear();
+    }
+
+
+    private void takeOffShipFragment(ArrayList<Coordinates> shipCoordinates) {
+        for (Coordinates shipFragment : shipCoordinates) {
+            board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).ship = null;
+            makeCellUnshot(shipFragment);
+        }
+    }
+
+    private void makeCellUnshot(Coordinates shipFragment) {
+        board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).wasAlreadyShot = false;
+        board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).setFill(new ImagePattern(img.defaultWater));
     }
 
 }

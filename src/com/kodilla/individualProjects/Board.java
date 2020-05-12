@@ -13,31 +13,53 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class Board extends Parent {
     Images img = new Images();
 
     private final VBox rows = new VBox();
 
-    public boolean boardOwner;
-    public int ships = 10;
+    public boolean isEnemyBoard;
+    public int ships;
     public ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = new ArrayList<>();
 
+    Text text = new Text();
+    String enemyBoardText =  "                     Enemy";
+    String playerBoardText = "                     Player";
+    Color enemyColor = Color.rgb(240,245,255);
+    Color playerColor = Color.rgb(112,96,57);
+
     public Board(boolean isEnemyBoard, EventHandler<? super MouseEvent> handler) {
-        this.boardOwner = isEnemyBoard;
+        this.isEnemyBoard = isEnemyBoard;
+        makeNewBoard(handler);
+    }
+
+    public void makeNewBoard(EventHandler<? super MouseEvent> handler) {
+        rows.getChildren().removeAll(rows.getChildren());
+
+        text.setText(isEnemyBoard ? enemyBoardText : playerBoardText);
+        text.setFont(Font.loadFont("file:resources/Fonts/IsadoraCyrPro.ttf", 35));
+        text.setFill(isEnemyBoard ? enemyColor : playerColor);
+        text.setStroke(isEnemyBoard ? enemyColor : playerColor);
+        text.setStrokeWidth(1);
+
         for (int y = 0; y < 10; y++) {
             HBox row = new HBox();
             for (int x = 0; x < 10; x++) {
-                Cell cell = new Cell(x, y, this);
-                cell.setOnMouseClicked(handler);
+                CellOnBoard cellOnBoard = new CellOnBoard(x, y, this);
+                cellOnBoard.setOnMouseClicked(handler);
 
-                row.getChildren().add(cell);
+                row.getChildren().add(cellOnBoard);
             }
 
             rows.getChildren().add(row);
         }
 
+        rows.getChildren().add(text);
         getChildren().add(rows);
     }
 
@@ -54,8 +76,8 @@ public class Board extends Parent {
             }
 
             for (int i = y; i < y + shipSize; i++) {
-                Cell cell = ship.isVertical ? getCellOnBoard(x, i) : getCellOnBoard(i, x);
-                cell.ship = ship;
+                CellOnBoard cellOnBoard = ship.isVertical ? getCellOnBoard(x, i) : getCellOnBoard(i, x);
+                cellOnBoard.ship = ship;
 
                 int currX = ship.isVertical ? x : i;
                 int currY = ship.isVertical ? i : x;
@@ -63,8 +85,8 @@ public class Board extends Parent {
                 partsOfTheShipCoordinates.add(new Coordinates(currX, currY, ship.isVertical));
                 ship.getCoordinates().add(new Coordinates(currX, currY, ship.isVertical));
 
-                if (boardOwner == BoardOwner.PLAYER.isOwner) {
-                    setShipImages(ship, y, shipSize, i, cell);
+                if (isEnemyBoard == BoardOwner.PLAYER.isOwner) {
+                    setShipImages(ship, y, shipSize, i, cellOnBoard);
                 }
             }
 
@@ -80,15 +102,15 @@ public class Board extends Parent {
         int length = ship.size;
 
         if (ship.isVertical) {
-            for (int i = y; i < y + length; i++) {
+            for (int i = y; i < y + length; i++) { // metoda oddzielna!
                 if (!pointIsInGridRange(x, i))
                     return false;
 
-                Cell cell = getCellOnBoard(x, i);
-                if (cell.ship != null)
+                CellOnBoard cellOnBoard = getCellOnBoard(x, i);
+                if (cellOnBoard.ship != null)
                     return false;
 
-                for (Cell neighbor : getAllNeighboringCells(x, i)) {
+                for (CellOnBoard neighbor : getAllNeighboringCells(x, i)) {
                     if (neighbor.ship != null)
                         return false;
                 }
@@ -98,11 +120,11 @@ public class Board extends Parent {
                 if (!pointIsInGridRange(i, y))
                     return false;
 
-                Cell cell = getCellOnBoard(i, y);
-                if (cell.ship != null)
+                CellOnBoard cellOnBoard = getCellOnBoard(i, y);
+                if (cellOnBoard.ship != null)
                     return false;
 
-                for (Cell neighbor : getAllNeighboringCells(i, y)) {
+                for (CellOnBoard neighbor : getAllNeighboringCells(i, y)) {
                     if (!pointIsInGridRange(i, y))
                         return false;
 
@@ -115,7 +137,7 @@ public class Board extends Parent {
         return true;
     }
 
-    public Cell[] getAllNeighboringCells(int x, int y) {
+    public CellOnBoard[] getAllNeighboringCells(int x, int y) {
         Point2D[] points = new Point2D[]{
                 new Point2D(x - 1, y),
                 new Point2D(x + 1, y),
@@ -130,7 +152,7 @@ public class Board extends Parent {
         return getCells(points);
     }
 
-    public Cell[] getDiagonalNeighboringCells(int x, int y) {
+    public CellOnBoard[] getDiagonalNeighboringCells(int x, int y) {
         Point2D[] points = new Point2D[]{
                 new Point2D(x + 1, y - 1),
                 new Point2D(x + 1, y + 1),
@@ -141,8 +163,8 @@ public class Board extends Parent {
         return getCells(points);
     }
 
-    private Cell[] getCells(Point2D[] points) {
-        List<Cell> neighbors = new ArrayList<>();
+    private CellOnBoard[] getCells(Point2D[] points) {
+        List<CellOnBoard> neighbors = new ArrayList<>();
 
         for (Point2D p : points) {
             if (pointIsInGridRange(p)) {
@@ -150,11 +172,11 @@ public class Board extends Parent {
             }
         }
 
-        return neighbors.toArray(new Cell[0]);
+        return neighbors.toArray(new CellOnBoard[0]);
     }
 
-    public Cell getCellOnBoard(int x, int y) {
-        return (Cell) ((HBox) rows.getChildren().get(y)).getChildren().get(x);
+    public CellOnBoard getCellOnBoard(int x, int y) {
+        return (CellOnBoard) ((HBox) rows.getChildren().get(y)).getChildren().get(x);
     }
 
     public boolean pointIsInGridRange(Point2D point) {
@@ -165,34 +187,34 @@ public class Board extends Parent {
         return x >= 0 && x < 10 && y >= 0 && y < 10;
     }
 
-    private void setShipImages(Ship ship, int y, int shipSize, int i, Cell cell) {
+    private void setShipImages(Ship ship, int y, int shipSize, int i, CellOnBoard cellOnBoard) {
         if (ship.isVertical && shipSize == ShipType.PATROL.size) {
-            cell.setFill(new ImagePattern(img.patrolShipVertical));
+            cellOnBoard.setFill(new ImagePattern(img.patrolShipVertical));
 
         } else if (ship.isVertical == ShipSituation.HORIZONTAL.orientation && shipSize == ShipType.PATROL.size) {
-            cell.setFill(new ImagePattern(img.patrolShipHorizontal));
+            cellOnBoard.setFill(new ImagePattern(img.patrolShipHorizontal));
 
         } else if (ship.isVertical && shipSize > ShipType.PATROL.size) {
-            setImageOfShipFragment(y, shipSize, i, cell, img.shipDefaultVerticalBow,
-                                                         img.shipDefaultVerticalCenter,
-                                                         img.shipDefaultVerticalStern);
+            setImageOfShipFragment(y, shipSize, i, cellOnBoard, img.shipDefaultVerticalBow,
+                    img.shipDefaultVerticalCenter,
+                    img.shipDefaultVerticalStern);
 
         } else if (ship.isVertical == ShipSituation.HORIZONTAL.orientation && shipSize > ShipType.PATROL.size) {
-            setImageOfShipFragment(y, shipSize, i, cell, img.shipDefaultHorizontalStern,
-                                                         img.shipDefaultHorizontalCenter,
-                                                         img.shipDefaultHorizontalBow);
+            setImageOfShipFragment(y, shipSize, i, cellOnBoard, img.shipDefaultHorizontalStern,
+                    img.shipDefaultHorizontalCenter,
+                    img.shipDefaultHorizontalBow);
         }
     }
 
-    private void setImageOfShipFragment(int y, int shipSize, int i, Cell cell, Image shipDefaultBow,
-                                                                               Image shipDefaultCenter,
-                                                                               Image shipDefaultStern) {
+    private void setImageOfShipFragment(int y, int shipSize, int i, CellOnBoard cellOnBoard, Image shipDefaultBow,
+                                        Image shipDefaultCenter,
+                                        Image shipDefaultStern) {
         if (i - y == 0)
-            cell.setFill(new ImagePattern(shipDefaultBow));
+            cellOnBoard.setFill(new ImagePattern(shipDefaultBow));
         if (i - y > 0 && i < y + shipSize - 1)
-            cell.setFill(new ImagePattern(shipDefaultCenter));
+            cellOnBoard.setFill(new ImagePattern(shipDefaultCenter));
         if (i == y + shipSize - 1)
-            cell.setFill(new ImagePattern(shipDefaultStern));
+            cellOnBoard.setFill(new ImagePattern(shipDefaultStern));
     }
 
 }
