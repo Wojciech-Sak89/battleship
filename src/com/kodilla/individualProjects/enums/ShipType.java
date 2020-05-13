@@ -8,8 +8,4 @@ public enum ShipType {
     ShipType(int size) {
         this.size = size;
     }
-
-    public int getSize() {
-        return size;
-    }
 }

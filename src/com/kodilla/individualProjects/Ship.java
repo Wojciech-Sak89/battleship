@@ -1,6 +1,5 @@
 package com.kodilla.individualProjects;
 
-import com.kodilla.individualProjects.enums.ShipSituation;
 import com.kodilla.individualProjects.enums.ShipType;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
@@ -13,9 +12,9 @@ import java.util.List;
 public class Ship extends Parent {
     Images img = new Images();
 
-    public int size;
-    public boolean isVertical;
-    public List<Coordinates> coordinates = new ArrayList<>();
+    private final int size;
+    private final boolean isVertical;
+    private final List<Coordinates> coordinates = new ArrayList<>();
 
     private int health;
 
@@ -68,7 +67,7 @@ public class Ship extends Parent {
         classicShips.add(ShipType.AIRCRAFT_CARRIER.size);
         classicShips.add(ShipType.BATTLESHIP.size);
         classicShips.add(ShipType.CRUISER.size);
-        classicShips.add(ShipType.DESTROYER.size);;
+        classicShips.add(ShipType.DESTROYER.size);
         classicShips.add(ShipType.PATROL.size);
 
         Collections.reverse(classicShips);
@@ -80,7 +79,7 @@ public class Ship extends Parent {
         if (isVertical && size == ShipType.PATROL.size) {
             destroyPatrol(board, img.patrolShipDestroyedVertical);
 
-        } else if (isVertical == ShipSituation.HORIZONTAL.orientation && size == ShipType.PATROL.size) {
+        } else if (!isVertical && size == ShipType.PATROL.size) {
             destroyPatrol(board, img.patrolShipDestroyedHorizontal);
 
         } else if (isVertical && size > ShipType.PATROL.size) {
@@ -88,7 +87,7 @@ public class Ship extends Parent {
                                                     img.shipDestroyedVerticalCenter,
                                                     img.shipDestroyedVerticalStern);
 
-        } else if (isVertical == ShipSituation.HORIZONTAL.orientation && size > ShipType.PATROL.size) {
+        } else if (!isVertical && size > ShipType.PATROL.size) {
             destroyShipGreaterThanPatrol(board, img.shipDestroyedHorizontalStern,
                                                     img.shipDestroyedHorizontalCenter,
                                                     img.shipDestroyedHorizontalBow);
@@ -114,4 +113,11 @@ public class Ship extends Parent {
         }
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public boolean isVertical() {
+        return isVertical;
+    }
 }

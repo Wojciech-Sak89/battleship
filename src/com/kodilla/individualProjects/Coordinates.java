@@ -3,7 +3,7 @@ package com.kodilla.individualProjects;
 public class Coordinates {
     private final int x;
     private final int y;
-    boolean vertical;
+    private final boolean vertical;
 
     public Coordinates(int x, int y, boolean vertical) {
         this.x = x;
@@ -19,4 +19,7 @@ public class Coordinates {
         return y;
     }
 
+    public boolean isVertical() {
+        return vertical;
+    }
 }

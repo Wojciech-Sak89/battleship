@@ -7,7 +7,7 @@ import java.util.Random;
 public class Enemy {
     private boolean hardMode;
     private final Random random = new Random();
-    Color textResultLoseColor = Color.rgb(144, 6, 37);
+    private final Color textResultLoseColor = Color.rgb(144, 6, 37);
 
     public boolean prepareShips(Board enemyBoard, int enemyShipsToPlace) {
         while (enemyShipsToPlace > 0) {
@@ -15,7 +15,7 @@ public class Enemy {
             int y = random.nextInt(10);
 
             if (enemyBoard.placeShip(new Ship(
-                    Ship.getShips(Content.classicMode).get(enemyShipsToPlace-1),
+                    Ship.getShips(Content.isClassicMode()).get(enemyShipsToPlace-1),
                     (Math.random() < 0.5)),
                     x, y)) {
                 enemyShipsToPlace--;
@@ -29,21 +29,21 @@ public class Enemy {
         while (enemyTurn) {
             int x = random.nextInt(10);
             int y = random.nextInt(10);
-            int shootWithAdvantage = random.nextInt(10 + 1);
+            int shootWithAdvantage = random.nextInt(100 + 1);
 
             CellOnBoard cellOnBoard = playerBoard.getCellOnBoard(x, y);
-            if (cellOnBoard.wasAlreadyShot)
+            if (cellOnBoard.isShot())
                 continue;
 
             if (hardMode) {
-                if (cellOnBoard.ship == null && shootWithAdvantage > 5) {
+                if (cellOnBoard.getShip() == null && shootWithAdvantage > 35) {
                     continue;
                 }
             }
 
             enemyTurn = cellOnBoard.shootCell().shootShip();
 
-            if (playerBoard.ships == 0) {
+            if (playerBoard.getShips() == 0) {
                 Content.setResultText("You have lost...");
                 Content.setTextResultColor(textResultLoseColor);
 

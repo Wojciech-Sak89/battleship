@@ -9,25 +9,28 @@ class CellOnBoard extends Rectangle {
     Color strokeDefault = Color.rgb(57, 84, 135);
 
     private final Board board;
-    public int x, y;
-    public boolean wasAlreadyShot;
+    private final int x;
+    private final int y;
+    private boolean shot;
 
-    public Ship ship;
-    public Marker marker;
+    private Ship ship;
+    private final Marker marker;
 
     public CellOnBoard(int x, int y, Board board) {
         super(50, 50);
         this.x = x;
         this.y = y;
         this.board = board;
+
         marker = new Marker(board);
+
         setFill(new ImagePattern(img.defaultWater));
         setStroke(strokeDefault);
         setStrokeWidth(1);
     }
 
     public CellOnBoard shootCell() {
-        wasAlreadyShot = true;
+        shot = true;
         setFill(new ImagePattern(img.shotCellWithNoShip));
 
         return this;
@@ -39,9 +42,7 @@ class CellOnBoard extends Rectangle {
             setFill(new ImagePattern(img.shipOnFire));
 
             if (!ship.isAlive()) {
-                board.ships--;
-                System.out.println("Ships left: " + board.ships + "on " +
-                        (board.isEnemyBoard ? "enemy" : "player") + " board");
+                board.getOffOneShip();
                 ship.markDestroyed(board);
             }
 
@@ -57,8 +58,31 @@ class CellOnBoard extends Rectangle {
     }
 
     public void markMissed() {
-        wasAlreadyShot = true;
+        shot = true;
         setFill(new ImagePattern(img.shotCellWithNoShip));
     }
 
+    public boolean isShot() {
+        return shot;
+    }
+
+    public void setShot(boolean shot) {
+        this.shot = shot;
+    }
+
+    public Ship getShip() {
+        return ship;
+    }
+
+    public void setShip(Ship ship) {
+        this.ship = ship;
+    }
+
+    public int getXvar() {
+        return x;
+    }
+
+    public int getYvar() {
+        return y;
+    }
 }

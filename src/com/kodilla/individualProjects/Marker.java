@@ -7,15 +7,15 @@ import javafx.scene.paint.ImagePattern;
 import java.util.ArrayList;
 
 public class Marker {
-    Board board; // zmienić na private!!!
-    Images img = new Images();
+    private final Board board;
+    private final Images img = new Images();
 
     public Marker(Board board) {
         this.board = board;
     }
 
     public void markSurroundingsOfSunkenShips() {
-        ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = board.wholeShipsCoordinates;
+        ArrayList<ArrayList<Coordinates>> wholeShipsCoordinates = board.getWholeShipsCoordinates();
 
         for (ArrayList<Coordinates> shipCoordinates : wholeShipsCoordinates) {
             int shotShipFragmentsNum = 0;
@@ -30,7 +30,7 @@ public class Marker {
         for (Coordinates shipFragmentCoordinates : shipCoordinates) {
             CellOnBoard cellOnBoard = board.getCellOnBoard(shipFragmentCoordinates.getX(), shipFragmentCoordinates.getY());
 
-            if (cellOnBoard.wasAlreadyShot && cellOnBoard.ship != null) {
+            if (cellOnBoard.isShot() && cellOnBoard.getShip() != null) {
                 shotShipFragmentsNum++;
             }
         }
@@ -61,8 +61,8 @@ public class Marker {
         Coordinates bow = shipCoordinates.get(0);
         Coordinates stern = shipCoordinates.get(shipCoordinates.size() - 1);
 
-        int adjustmentX = bow.vertical ? 0 : 1;
-        int adjustmentY = stern.vertical ? 1 : 0;
+        int adjustmentX = bow.isVertical() ? 0 : 1;
+        int adjustmentY = stern.isVertical() ? 1 : 0;
 
         Point2D pointBeforeSunkenShipBow =
                 new Point2D(bow.getX() - adjustmentX, bow.getY() - adjustmentY);
@@ -88,26 +88,13 @@ public class Marker {
     public void makeNewBoard() {
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
-                board.getCellOnBoard(x, y).ship = null;
-                board.getCellOnBoard(x, y).wasAlreadyShot = false;
+                board.getCellOnBoard(x, y).setShip(null);
+                board.getCellOnBoard(x, y).setShot(false);
                 board.getCellOnBoard(x, y).setFill(new ImagePattern(img.defaultWater));
             }
         }
 
-        board.wholeShipsCoordinates.clear();
-    }
-
-
-    private void takeOffShipFragment(ArrayList<Coordinates> shipCoordinates) {
-        for (Coordinates shipFragment : shipCoordinates) {
-            board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).ship = null;
-            makeCellUnshot(shipFragment);
-        }
-    }
-
-    private void makeCellUnshot(Coordinates shipFragment) {
-        board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).wasAlreadyShot = false;
-        board.getCellOnBoard(shipFragment.getX(), shipFragment.getY()).setFill(new ImagePattern(img.defaultWater));
+        board.getWholeShipsCoordinates().clear();
     }
 
 }

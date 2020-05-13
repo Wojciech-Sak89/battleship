@@ -8,8 +8,11 @@ public class BackgroundForGame {
 
     static BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
     static BackgroundImage backgroundImage = new BackgroundImage
-                                            (imageForBackground, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
-                                                    BackgroundPosition.CENTER, backgroundSize);
+                                            (imageForBackground,
+                                                    BackgroundRepeat.REPEAT,
+                                                    BackgroundRepeat.NO_REPEAT,
+                                                    BackgroundPosition.CENTER,
+                                                    backgroundSize);
     static Background background = new Background(backgroundImage);
 
     public static Background myBackground() {
